@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Edit3, Camera, Star, Target, Bell, Loader2 } from "lucide-react"
+import { Edit3, Camera, Star, Target, Bell, Loader2, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import AuthHeader from "@/components/auth-header"
+import AddressSearch from "@/components/address-search"
 
 interface UserProfile {
   name: string
@@ -42,6 +43,13 @@ interface UserProfile {
     recommendations: boolean
     promotions: boolean
     newsletter: boolean
+  }
+  address: {
+    roadAddress: string
+    jibunAddress: string
+    placeName?: string
+    latitude?: number
+    longitude?: number
   }
 }
 
@@ -76,6 +84,10 @@ export default function ProfilePage() {
       recommendations: true,
       promotions: false,
       newsletter: true,
+    },
+    address: {
+      roadAddress: "",
+      jibunAddress: "",
     },
   })
 
@@ -326,6 +338,39 @@ export default function ProfilePage() {
                       className="h-12"
                     />
                   </div>
+
+                  {isEditing && (
+                    <div className="space-y-2">
+                      <Label>주소</Label>
+                      <AddressSearch
+                        onAddressSelect={(address) => {
+                          setEditedProfile((prev) => ({
+                            ...prev,
+                            address: {
+                              roadAddress: address,
+                              jibunAddress: address,
+                              placeName: "",
+                              latitude: 0,
+                              longitude: 0,
+                            },
+                          }))
+                        }}
+                        selectedAddress={editedProfile.address.roadAddress}
+                      />
+                    </div>
+                  )}
+
+                  {!isEditing && profile.address.roadAddress && (
+                    <div className="space-y-2">
+                      <Label>주소</Label>
+                      <div className="p-3 bg-gray-50 rounded-lg border">
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4 text-gray-600" />
+                          <span className="text-sm">{profile.address.roadAddress}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="bio">자기소개</Label>
